@@ -2,14 +2,8 @@
 * myrobot.cpp
 *
 * Class Description: simple robot arms.
-* Ref: from example1.cpp (given by TA)
 * Last modified on: 14 Mar 2018
 * Author: Tu Dat Nguyen
-* Comment:
-    - Temporarily fixed the menu problem: still able use the mouse middle button
-      to access menu
-	- General: code needs improving: refactor
-    - Refer to Readme for compiling
 */
 
 #include "Angel.h"
@@ -66,12 +60,11 @@ GLuint ModelView, Projection;
 
 // Array of rotation angles (in degrees) for each rotation axis
 enum { Base = 0, LowerArm = 1, UpperArm = 2, TopView = 4, SideView = 5, NumAngles = 3 };
-// enum { TopView = 4, SideView = 5 };
 int Axis = Base;
 int View = SideView; // default view
 GLfloat  Theta[NumAngles] = { 0.0 };
 
-// setup for fetching}
+// setup for fetching
 // vec4 old_position, new_position;
 point4 old_position, new_position, sphere_position;
 
@@ -137,9 +130,7 @@ void base() {
 		 Scale( BASE_WIDTH,
 			BASE_HEIGHT,
 			BASE_WIDTH ) );
-
     glUniformMatrix4fv( ModelView, 1, GL_TRUE, model_view * instance );
-
     glDrawArrays( GL_TRIANGLES, 0, NumVertices );
 }
 
@@ -150,7 +141,6 @@ void upper_arm() {
 		      Scale( UPPER_ARM_WIDTH,
 			     UPPER_ARM_HEIGHT,
 			     UPPER_ARM_WIDTH ) );
-
     glUniformMatrix4fv( ModelView, 1, GL_TRUE, model_view * instance );
     glDrawArrays( GL_TRIANGLES, 0, NumVertices );
 }
@@ -162,7 +152,6 @@ void lower_arm() {
 		      Scale( LOWER_ARM_WIDTH,
 			     LOWER_ARM_HEIGHT,
 			     LOWER_ARM_WIDTH ) );
-
     glUniformMatrix4fv( ModelView, 1, GL_TRUE, model_view * instance );
     glDrawArrays( GL_TRIANGLES, 0, NumVertices );
 }
@@ -172,12 +161,10 @@ void sphere() {
     // case: move sphere together with arms
     if (reach_sphere && !reach_new_position)
         instance = Translate( 0.0, UPPER_ARM_HEIGHT + SPHERE_RADIUS, 0.0 );
-    else
-        instance = Translate( sphere_position ); // case: sphere is released
-
+    else // case: sphere is released
+        instance = Translate( sphere_position );
     glUniformMatrix4fv( ModelView, 1, GL_TRUE, model_view * instance );
-
-    glutSolidSphere( SPHERE_RADIUS, 50, 50 );   // how to colorize/ shade sphere -> ask TA for help
+    glutSolidSphere( SPHERE_RADIUS, 50, 50 );
 }
 
 //----------------------------------------------------------------------------
@@ -185,11 +172,8 @@ void sphere() {
 void display( void ) {
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-    // avoid LookAt and glOrtho
-    if (View == TopView) {
-        // model_view = ( Translate(0, BASE_WIDTH, 0) * RotateX(90.0) );
-        
-    }
+    if (View == TopView)
+        model_view = ( Translate(0, BASE_WIDTH, 0) * RotateX(90.0) );
     else
         model_view = ( RotateX(0) );
 
@@ -208,7 +192,7 @@ void display( void ) {
     RotateZ(Theta[UpperArm]) );
     upper_arm();
 
-    // draw sphere after all motions of robot amrs and base
+    // moving sphere
     if (fetchMode && reach_sphere && !reach_new_position)
         sphere();
 
